@@ -1,3 +1,32 @@
+libcap-ng (0.6.6-2) unstable; urgency=high
+
+  * Switch to dpkg-source 3.0 (quilt) format
+  * Bump Standards Version to 3.9.3
+  * Add patch to replace memset calls by a loop to zero array.
+    This should fix a segfault on armel (and other) architectures
+    (Closes: #631807, #635664)
+  * RC bugs, so urgency high
+
+ -- Pierre Chifflier <pollux@debian.org>  Sat, 16 Jun 2012 22:38:20 +0200
+
+libcap-ng (0.6.6-1) unstable; urgency=low
+
+  * Imported Upstream version 0.6.6
+  * Enable hardening-wrapper
+  * Bump Standard Version to 3.9.2
+
+ -- Pierre Chifflier <pollux@debian.org>  Sat, 25 Jun 2011 13:57:30 +0200
+
+libcap-ng (0.6.5-1) unstable; urgency=low
+
+  * Imported Upstream version 0.6.5
+  * Bump standards version to 3.9.1
+  * debian/rules: Fix installation for python2.7 (Closes: #607121).
+    Thanks to Matthias Klose for the patch.
+  * Use uppercase for word POSIX (Closes: #591065)
+
+ -- Pierre Chifflier <pollux@debian.org>  Tue, 14 Dec 2010 22:12:49 +0100
+
 libcap-ng (0.6.4-1) unstable; urgency=low
 
   * Imported Upstream version 0.6.4

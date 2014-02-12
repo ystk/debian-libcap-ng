@@ -9,6 +9,8 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+export DEB_BUILD_HARDENING=1
+
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
@@ -81,7 +83,7 @@ build-ext-stamp:  config.status
 		vers=$$(echo $$pythonvers | sed "s/python//"); \
 		echo $$pythonvers; \
 		PYFLAGS="PYTHON_VERSION=$$vers _capng_la_LIBADD=\"-l$$pythonvers\""; \
-		sed -i "s/2\.[456]/$$vers/" bindings/python/Makefile; \
+		sed -i "s/2\.[4567]/$$vers/" bindings/python/Makefile; \
 		$(MAKE) -C bindings/python clean; \
 		$(MAKE) -C bindings/python $$PYFLAGS; \
 		$(MAKE) -C bindings/python $$PYFLAGS DESTDIR=$(CURDIR)/debian/tmp install; \

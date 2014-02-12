@@ -1,6 +1,6 @@
 /*
  * filecap.c - A program that lists running processes with capabilities
- * Copyright (c) 2009 Red Hat Inc., Durham, North Carolina.
+ * Copyright (c) 2009-10 Red Hat Inc., Durham, North Carolina.
  * All Rights Reserved.
  *
  * This software may be freely redistributed and/or modified under the
@@ -41,12 +41,15 @@ static void usage(void)
 	exit(1);
 }
 
-static int check_file(const char *file,
-		const struct stat *sb_unused __attribute__ ((unused)),
-		int flag_unused __attribute__ ((unused)),
+static int check_file(const char *fpath,
+		const struct stat *sb,
+		int typeflag_unused __attribute__ ((unused)),
 		struct FTW *s_unused __attribute__ ((unused)))
 {
-	int fd = open(file, O_RDONLY);
+	if (S_ISREG(sb->st_mode) == 0)
+		return FTW_CONTINUE;
+
+	int fd = open(fpath, O_RDONLY);
 	if (fd >= 0) {
 		capng_results_t rc;
 
@@ -58,7 +61,7 @@ static int check_file(const char *file,
 				header = 1;
 				printf("%-20s capabilities\n", "file");
 			}
-			printf("%s     ", file);
+			printf("%s     ", fpath);
 			if (rc == CAPNG_FULL)
 				printf("full");
 			else
@@ -68,7 +71,7 @@ static int check_file(const char *file,
 		}
 		close(fd);
 	}
-	return 0;
+	return FTW_CONTINUE;
 }
 
 
@@ -85,6 +88,7 @@ int main(int argc, char *argv[])
 	printf("File based capabilities are not supported\n");
 #else
 	char *path_env, *path = NULL, *dir = NULL;
+	struct stat sbuf;
 	int nftw_flags = FTW_PHYS;
 	int i;
 
@@ -101,8 +105,7 @@ int main(int argc, char *argv[])
 				}
 				return 0;
 			} else if (argv[i][0] == '/') {
-				struct stat buf;
-				if (lstat(argv[i], &buf) != 0) {
+				if (lstat(argv[i], &sbuf) != 0) {
 					printf("Error checking path %s (%s)\n",
 						argv[i], strerror(errno));
 					exit(1);
@@ -110,11 +113,11 @@ int main(int argc, char *argv[])
 				// Clear all capabilities in case cap strings
 				// follow. If we get a second file we err out
 				// so this is safe
-				if (S_ISREG(buf.st_mode) && path == NULL &&
+				if (S_ISREG(sbuf.st_mode) && path == NULL &&
 								 dir == NULL) {
 					path = argv[i];
 					capng_clear(CAPNG_SELECT_BOTH);
-				} else if (S_ISDIR(buf.st_mode) && path == NULL 
+				} else if (S_ISDIR(sbuf.st_mode) && path == NULL 
 								&& dir == NULL)
 					dir = argv[i];
 				else {
@@ -160,7 +163,7 @@ int main(int argc, char *argv[])
 		nftw(dir, check_file, 1024, nftw_flags);
 	}else if (path && capabilities == 0) {
 		// Print out specific file
-		check_file(path, NULL, 0, NULL);
+		check_file(path, &sbuf, 0, NULL);
 	} else if (path && capabilities == 1) {
 		// Write capabilities to file
 		int fd = open(path, O_WRONLY|O_NOFOLLOW);

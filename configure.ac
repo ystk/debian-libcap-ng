@@ -29,7 +29,7 @@ define([AC_INIT_NOTICE],
 ])
 
 AC_REVISION($Revision: 1.3 $)dnl
-AC_INIT(libcap-ng,0.6.4)
+AC_INIT(libcap-ng,0.6.6)
 AC_PREREQ(2.12)dnl
 AM_CONFIG_HEADER(config.h)
 
@@ -105,10 +105,34 @@ AC_CHECK_HEADER(sys/syscall.h,
 
 AC_CHECK_PROG(swig_found, swig, yes, no)
 if test x"${swig_found}" = x"no" ; then
-	AC_MSG_WARN("Swig not found, python bindings will not be made")
+	AC_MSG_WARN("Swig not found - python bindings will not be made")
 fi
 AM_CONDITIONAL(HAVE_SWIG, test x"${swig_found}" = x"yes")
+
+AC_MSG_CHECKING(whether to create python bindings)
+AC_ARG_WITH(python,
+AS_HELP_STRING([--with-python],[enable building python bindings]),
+use_python=$withval,
+use_python=auto)
+if test x$use_python = xno ; then
+	python_found="no"
+	AC_MSG_RESULT(no)
+else
+AC_MSG_RESULT(testing)
 AM_PATH_PYTHON
+if test -f /usr/include/python${am_cv_python_version}/Python.h ; then
+	python_found="yes"
+	AC_MSG_NOTICE(Python bindings will be built)
+else
+	python_found="no"
+	if test x$use_python = xyes ; then
+		AC_MSG_ERROR([Python explicitly required and python headers found])
+	else
+		AC_MSG_WARN("Python headers not found - python bindings will not be made")
+	fi
+fi
+fi
+AM_CONDITIONAL(HAVE_PYTHON, test ${python_found} = "yes")
 
 AC_OUTPUT(Makefile src/Makefile src/libcap-ng.pc src/test/Makefile 
 	bindings/Makefile bindings/python/Makefile

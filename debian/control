@@ -1,16 +1,16 @@
 Source: libcap-ng
 Priority: optional
 Maintainer: Pierre Chifflier <pollux@debian.org>
-Build-Depends: debhelper (>= 7),
+Build-Depends: debhelper (>= 9),
+    dh-autoreconf,
     autotools-dev,
     libattr1-dev,
     chrpath,
     swig,
-    python-all-dev,
-    python-support (>= 0.5.3),
-    hardening-wrapper
-Standards-Version: 3.9.3
+    python-all-dev
+Standards-Version: 3.9.5
 Section: libs
+X-Python-Version: >= 2.6
 Homepage: http://people.redhat.com/sgrubb/libcap-ng
 
 Package: libcap-ng-dev
@@ -29,6 +29,8 @@ Description: Development and header files for libcap-ng
 Package: libcap-ng0
 Section: libs
 Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: An alternate POSIX capabilities library
  This library implements the user-space interfaces to the POSIX
@@ -54,12 +56,11 @@ Description: Utilities for analysing and setting file capabilities
  The libcap-ng library is intended to make programming with POSIX
  capabilities much easier than the traditional libcap library.
  .
- This package contains utilies for analysing and setting file capabilities.
+ This package contains utilities for analysing and setting file capabilities.
 
 Package: python-cap-ng
 Section: python
 Architecture: any
-XB-Python-Version: ${python:Versions}
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
 Description: Python bindings for libcap-ng
  This library implements the user-space interfaces to the POSIX

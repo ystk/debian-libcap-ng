@@ -1,3 +1,45 @@
+libcap-ng (0.7.4-2) unstable; urgency=medium
+
+  * Replace pyversions file with X-Python-Version control field
+  * Disable tests for now, they fail because of a failing relink
+
+ -- Pierre Chifflier <pollux@debian.org>  Fri, 22 Aug 2014 08:37:26 +0200
+
+libcap-ng (0.7.4-1) unstable; urgency=medium
+
+  * Imported Upstream version 0.7.4
+  * Bump Standards Version to 3.9.5
+  * Drop dependency on hardening-wrapper, we are using dpkg-buildflags
+  * Ack NMU
+
+ -- Pierre Chifflier <pollux@debian.org>  Wed, 20 Aug 2014 15:33:07 +0200
+
+libcap-ng (0.7.3-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Use dh-autoreconf for better support of new architectures.  Thanks
+    Breno Leitao <brenohl@br.ibm.com> (Closes: #745562)
+  * Do not Build-Depend on python-support, since the package uses dh9 and
+    --with python2 (thus using the current dh_python2 utility and rendering
+    the other build-dependency obsolete).  Thanks Sebastien Bacher
+    <seb128@ubuntu.com> (Closes: #707100)
+  * Add "Multi-Arch: same" in debian/control to avoid some conflicts in
+    dpkg.  Thanks Frédéric Brière <fbriere@fbriere.net> (Closes: #697385)
+    - Also change 'Pre-Depends: multiarch-support' to
+     'Pre-Depends: ${misc:Pre-Depends}', as recommended in the guides
+  * Fix typo in package description, thanks Pascal De Vuyst
+    <pascal.devuyst@gmail.com> (Closes: #704466)
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Tue, 20 May 2014 20:54:46 +0100
+
+libcap-ng (0.7.3-1) unstable; urgency=low
+
+  * Imported Upstream version 0.7.3
+  * Swith to DH 9
+  * Tests are no enabled during build (Closes: #583882)
+
+ -- Pierre Chifflier <pollux@debian.org>  Sat, 10 Nov 2012 16:29:37 +0100
+
 libcap-ng (0.6.6-2) unstable; urgency=high
 
   * Switch to dpkg-source 3.0 (quilt) format

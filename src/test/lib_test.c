@@ -1,5 +1,5 @@
 /* lib_test.c -- simple libcap-ng test suite
- * Copyright 2009 Red Hat Inc., Durham, North Carolina.
+ * Copyright 2009,2012-13 Red Hat Inc., Durham, North Carolina.
  * All Rights Reserved.
  *
  * This library is free software; you can redistribute it and/or
@@ -25,11 +25,33 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
+int get_last_cap(void)
+{
+	int fd;
+
+	fd = open("/proc/sys/kernel/cap_last_cap", O_RDONLY);
+	if (fd == -1) {
+		return CAP_LAST_CAP;
+	} else {
+		char buf[8];
+		int num = read(fd, buf, sizeof(buf));
+		if (num > 0) {
+			errno = 0;
+			int val = strtoul(buf, NULL, 10);
+			if (errno == 0)
+				return val;
+		}
+	}
+	return CAP_LAST_CAP;
+}
 
 int main(void)
 {
-	int rc, i, len, last = CAP_LAST_CAP;
+	int rc, i, len, last = get_last_cap();
 	char *text;
 	void *saved;
 
@@ -59,6 +81,7 @@ int main(void)
 	}
 	printf("Doing advanced bit tests for %d capabilities...\n", last);
 	for (i=0; i<=last; i++) {
+		const char *name;
 		capng_clear(CAPNG_SELECT_BOTH);
 		rc = capng_update(CAPNG_ADD, CAPNG_EFFECTIVE, i);
 		if (rc) {
@@ -103,10 +126,14 @@ int main(void)
 			puts("Failed getting print text to buffer");
 			abort();
 		}
-		if (strcmp(text, capng_capability_to_name(i))) {
+		name = capng_capability_to_name(i);
+		if (name == NULL) { 
+			printf("Failed converting capability %d to name\n", i);
+			abort();
+		}
+		if (strcmp(text, name)) {
 			puts("Failed print text comparison");
-			printf("%s != %s\n", text,
-					capng_capability_to_name(i));
+			printf("%s != %s\n", text, name);
 			abort();
 		}
 		free(text);
